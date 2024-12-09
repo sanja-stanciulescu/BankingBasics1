@@ -3,9 +3,11 @@ package org.poo.main;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import org.poo.app.AppManager;
 import org.poo.checker.Checker;
 import org.poo.checker.CheckerConstants;
 import org.poo.fileio.ObjectInput;
+import org.poo.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -93,7 +95,11 @@ public final class Main {
          *
          */
 
+        AppManager appManager = new AppManager();
+        appManager.start(output, inputData);
+
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
+        Utils.resetRandom();
         objectWriter.writeValue(new File(filePath2), output);
     }
 
