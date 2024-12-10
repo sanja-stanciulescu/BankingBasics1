@@ -2,6 +2,7 @@ package org.poo.app;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.poo.accounts.ClassicAccount;
+import org.poo.cards.Card;
 import org.poo.commerciants.CommerciantCatgeory;
 import org.poo.exchangeRates.ExchangeRate;
 import org.poo.fileio.CommandInput;
@@ -65,7 +66,7 @@ public class AppManager {
         TransactionStrategy transaction = null;
         User currentUser;
         ClassicAccount currentAccount;
-
+        Card currentCard;
         switch (command.getCommand()) {
             case "printUsers":
                 transaction = new PrintUserTransaction(command, output, allUsers);
@@ -74,13 +75,33 @@ public class AppManager {
                 currentUser = searchUserByEmail(command.getEmail());
                 transaction = new AddAccountTransaction(command, currentUser);
                 break;
-            case "createCard":
+            case "createCard", "createOneTimeCard":
                 currentUser = searchUserByEmail(command.getEmail());
                 transaction = new AddCardTransaction(command, currentUser);
                 break;
             case "addFunds":
                 currentAccount = searchAccountByIban(command.getAccount());
                 transaction = new AddFundsTransaction(command, currentAccount);
+                break;
+            case "deleteAccount":
+                currentUser = searchUserByEmail(command.getEmail());
+                transaction = new DeleteAccountTransaction(command, output, currentUser);
+                break;
+            case "deleteCard":
+                currentAccount = searchAccountByCard(command.getCardNumber());
+                if (currentAccount != null) {
+                    currentUser = searchUserByIban(currentAccount.getIban());
+                } else {
+                    currentUser = null;
+                }
+                transaction = new DeleteCardTransaction(command, currentAccount, currentUser);
+                break;
+            case "setMinimumBalance":
+                currentUser = searchUserByIban(command.getAccount());
+                transaction = new MinBalanceTransaction(command, output, currentUser);
+                break;
+            case "payOnline":
+                currentUser = searchUserByEmail(command.getEmail());
                 break;
             default:
                 System.out.println("Invalid command");
@@ -98,6 +119,18 @@ public class AppManager {
         return null;
     }
 
+    private User searchUserByIban(final String iban) {
+        for (User user : allUsers) {
+            for (ClassicAccount account : user.getAccounts()) {
+                if (account.getIban().equals(iban)) {
+                    return user;
+                }
+            }
+        }
+
+        return null;
+    }
+
     private ClassicAccount searchAccountByIban(final String iban) {
         for (User user : allUsers) {
             for (ClassicAccount account : user.getAccounts()) {
@@ -106,6 +139,20 @@ public class AppManager {
                 }
             }
         }
+        return null;
+    }
+
+    private ClassicAccount searchAccountByCard(String cardNumber) {
+        for (User user : allUsers) {
+            for (ClassicAccount account : user.getAccounts()) {
+                for (Card card : account.getCards()) {
+                    if (card.getCardNumber().equals(cardNumber)) {
+                        return account;
+                    }
+                }
+            }
+        }
+
         return null;
     }
 

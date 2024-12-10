@@ -1,6 +1,9 @@
 package org.poo.cards;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class OneTimeCard extends Card{
+    @JsonIgnore
     private int hasBeenUsed;
 
     public OneTimeCard(String cardNumber) {

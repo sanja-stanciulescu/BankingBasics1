@@ -3,6 +3,7 @@ package org.poo.transactions;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.poo.accounts.ClassicAccount;
 import org.poo.cards.Card;
+import org.poo.cards.OneTimeCard;
 import org.poo.fileio.CommandInput;
 import org.poo.users.User;
 import org.poo.utils.Utils;
@@ -46,7 +47,12 @@ public class AddCardTransaction implements TransactionStrategy{
             if (account.getIban().equals(iban)) {
                 String cardNumber = Utils.generateCardNumber();
                 this.card = cardNumber;
-                account.getCards().add(new Card(cardNumber, "active"));
+                if (command.getCommand().equals("createCard")) {
+                    account.getCards().add(new Card(cardNumber, "active"));
+                } else if (command.getCommand().equals("createOneTimeCard")) {
+                    account.getCards().add(new OneTimeCard(cardNumber));
+                }
+
                 return 1;
             }
         }
