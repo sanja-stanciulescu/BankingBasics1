@@ -97,6 +97,13 @@ public class AppManager {
                 currentUser = searchUserByEmail(command.getEmail());
                 transaction = new PayOnlineTransaction(command, output, bank, currentUser);
                 break;
+            case "sendMoney":
+                currentAccount = searchAccountByIban(command.getAccount());
+                ClassicAccount receiver = searchAccountByIban(command.getReceiver());
+                transaction = new SendMoneyTransaction(command, currentAccount, receiver, bank);
+                break;
+            case "setAlias":
+                break;
             default:
                 System.out.println("Invalid command");
         }

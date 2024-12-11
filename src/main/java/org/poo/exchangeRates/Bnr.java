@@ -3,6 +3,8 @@ package org.poo.exchangeRates;
 import org.poo.fileio.ObjectInput;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Bnr {
     private ArrayList<ExchangeRate> exchangeRates;
@@ -35,23 +37,30 @@ public class Bnr {
     }
 
     public double getExchangeRate(String from, String to) {
+        Queue<ExchangeRateNode> queue = new LinkedList<>();
+        ArrayList<String> visited = new ArrayList<>();
 
+        queue.add(new ExchangeRateNode(from, 1.0));
+        visited.add(from);
 
-    }
+        while (!queue.isEmpty()) {
+            ExchangeRateNode currentNode = queue.poll();
+            String currentCurrency = currentNode.getCurrency();
+            double currentRate = currentNode.getRate();
 
-    public double getExchangeRate(String from, String to) {
-        double rate = 1;
-        for (ExchangeRate exchangeRate : exchangeRates) {
-            if (exchangeRate.getFrom().equals(from) && exchangeRate.getTo().equals(to)) {
-                return exchangeRate.getRate();
+            if (currentCurrency.equals(to)) {
+                return currentRate;
             }
 
-            if (exchangeRate.getFrom().equals(from) && !exchangeRate.getTo().equals(to)) {
-                rate = rate * getExchangeRate(exchangeRate.getTo(), to);
+            for (ExchangeRate rate : exchangeRates) {
+                if (rate.getFrom().equals(currentCurrency) && !visited.contains(rate.getTo())) {
+                    visited.add(rate.getTo());
+                    queue.add(new ExchangeRateNode(rate.getTo(), currentRate * rate.getRate()));
+                }
             }
         }
 
-        return rate;
+        return -1;
     }
 
     public ArrayList<ExchangeRate> getExchangeRates() {

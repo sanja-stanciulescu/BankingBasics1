@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.poo.accounts.ClassicAccount;
 import org.poo.exchangeRates.Bnr;
+import org.poo.exchangeRates.ExchangeRate;
 import org.poo.fileio.CommandInput;
 import org.poo.users.User;
 
@@ -46,6 +47,7 @@ public class PayOnlineTransaction implements TransactionStrategy{
                 double amount;
                 if (!currency.equals(command.getCurrency())) {
                     double exchangeRate = bank.getExchangeRate(command.getCurrency(), currency);
+                    bank.getExchangeRates().add(new ExchangeRate(command.getCurrency(), currency, exchangeRate));
                     amount = command.getAmount() * exchangeRate;
                 } else {
                     amount = command.getAmount();
@@ -108,5 +110,13 @@ public class PayOnlineTransaction implements TransactionStrategy{
 
     public void setOutput(ArrayNode output) {
         this.output = output;
+    }
+
+    public Bnr getBank() {
+        return bank;
+    }
+
+    public void setBank(Bnr bank) {
+        this.bank = bank;
     }
 }
