@@ -8,7 +8,13 @@ public class ExchangeRate {
     private double rate;
     private int timestamp;
 
-    public ExchangeRate(ExchangeInput other) {
+    public ExchangeRate(final String from, final String to, final double rate) {
+        this.from = from;
+        this.to = to;
+        this.rate = rate;
+    }
+
+    public ExchangeRate(final ExchangeInput other) {
         this.from = other.getFrom();
         this.to = other.getTo();
         this.rate = other.getRate();

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.poo.accounts.ClassicAccount;
 import org.poo.cards.Card;
 import org.poo.commerciants.CommerciantCatgeory;
+import org.poo.exchangeRates.Bnr;
 import org.poo.exchangeRates.ExchangeRate;
 import org.poo.fileio.CommandInput;
 import org.poo.fileio.ObjectInput;
@@ -14,12 +15,12 @@ import java.util.ArrayList;
 
 public class AppManager {
     private ArrayList<User> allUsers;
-    private ArrayList<ExchangeRate> exchangeRates;
+    private Bnr bank;
     private ArrayList<CommerciantCatgeory> commerciantCategories;
 
     public AppManager() {
         allUsers = new ArrayList<>();
-        exchangeRates = new ArrayList<>();
+        bank = new Bnr();
         commerciantCategories = new ArrayList<>();
     }
 
@@ -29,19 +30,11 @@ public class AppManager {
             allUsers.add(new User(inputData.getUsers()[i]));
         }
 
-        int length;
-
         //Initialize the board where exchange rates are showcased
-        if (inputData.getExchangeRates() != null) {
-            length = inputData.getExchangeRates().length;
-        } else {
-            length = 0;
-        }
-        for (int i = 0; i < length; i++) {
-            exchangeRates.add(new ExchangeRate(inputData.getExchangeRates()[i]));
-        }
+        bank.setUp(inputData);
 
         //Initialize possible categories for commerciants
+        int length;
         if (inputData.getCommerciants() != null) {
             length = inputData.getCommerciants().length;
         } else {
@@ -102,6 +95,7 @@ public class AppManager {
                 break;
             case "payOnline":
                 currentUser = searchUserByEmail(command.getEmail());
+                transaction = new PayOnlineTransaction(command, output, bank, currentUser);
                 break;
             default:
                 System.out.println("Invalid command");
@@ -162,14 +156,6 @@ public class AppManager {
 
     public void setAllUsers(ArrayList<User> allUsers) {
         this.allUsers = allUsers;
-    }
-
-    public ArrayList<ExchangeRate> getExchangeRates() {
-        return exchangeRates;
-    }
-
-    public void setExchangeRates(ArrayList<ExchangeRate> exchangeRates) {
-        this.exchangeRates = exchangeRates;
     }
 
     public ArrayList<CommerciantCatgeory> getCommerciantCategories() {
