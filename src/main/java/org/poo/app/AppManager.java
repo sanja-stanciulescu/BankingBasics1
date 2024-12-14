@@ -17,11 +17,13 @@ public class AppManager {
     private ArrayList<User> allUsers;
     private Bnr bank;
     private ArrayList<CommerciantCatgeory> commerciantCategories;
+    private IBANRegistry registry;
 
     public AppManager() {
         allUsers = new ArrayList<>();
         bank = new Bnr();
         commerciantCategories = new ArrayList<>();
+        registry = new IBANRegistry();
     }
 
     public void start(final ArrayNode output, final ObjectInput inputData) {
@@ -66,7 +68,7 @@ public class AppManager {
                 break;
             case "addAccount":
                 currentUser = searchUserByEmail(command.getEmail());
-                transaction = new AddAccountTransaction(command, currentUser);
+                transaction = new AddAccountTransaction(command, registry, currentUser);
                 break;
             case "createCard", "createOneTimeCard":
                 currentUser = searchUserByEmail(command.getEmail());
@@ -99,10 +101,15 @@ public class AppManager {
                 break;
             case "sendMoney":
                 currentAccount = searchAccountByIban(command.getAccount());
-                ClassicAccount receiver = searchAccountByIban(command.getReceiver());
+                ClassicAccount receiver = searchAccountByIban(registry.getIBAN(command.getReceiver()));
                 transaction = new SendMoneyTransaction(command, currentAccount, receiver, bank);
                 break;
             case "setAlias":
+                currentAccount = searchAccountByIban(command.getAccount());
+                transaction = new SetAliasTransaction(command, registry, currentAccount);
+                break;
+            case "printTransactions":
+                currentUser = searchUserByEmail(command.getEmail());
                 break;
             default:
                 System.out.println("Invalid command");

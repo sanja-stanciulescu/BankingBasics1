@@ -3,6 +3,7 @@ package org.poo.transactions;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.poo.accounts.ClassicAccount;
 import org.poo.accounts.SavingsAccount;
+import org.poo.app.IBANRegistry;
 import org.poo.fileio.CommandInput;
 import org.poo.users.User;
 import org.poo.utils.Utils;
@@ -14,26 +15,30 @@ public class AddAccountTransaction implements TransactionStrategy{
     @JsonIgnore
     private CommandInput command;
     private User currentUser;
+    private IBANRegistry registry;
 
-    public AddAccountTransaction(final CommandInput command, final User currentUser) {
+    public AddAccountTransaction(final CommandInput command, final IBANRegistry registry, final User currentUser) {
         this.timestamp = command.getTimestamp();
         this.description = command.getDescription();
         this.command = command;
+        this.registry = registry;
         this.currentUser = currentUser;
     }
 
     @Override
     public void makeTransaction() {
+        String iban = "";
         if (command.getAccountType().equals("classic")) {
-            String iban = Utils.generateIBAN();
+            iban = Utils.generateIBAN();
             String currency = command.getCurrency();
             currentUser.getAccounts().add(new ClassicAccount(iban, currency, "classic"));
         } else if (command.getAccountType().equals("savings")) {
-            String iban = Utils.generateIBAN();
+            iban = Utils.generateIBAN();
             String currency = command.getCurrency();
             double interest = command.getInterestRate();
             currentUser.getAccounts().add(new SavingsAccount(iban, currency, "savings", interest));
         }
+        registry.registerIBAN(iban, iban);
         currentUser.getTransactions().add(this);
     }
 
@@ -68,5 +73,13 @@ public class AddAccountTransaction implements TransactionStrategy{
 
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
+    }
+
+    public IBANRegistry getRegistry() {
+        return registry;
+    }
+
+    public void setRegistry(IBANRegistry registry) {
+        this.registry = registry;
     }
 }
