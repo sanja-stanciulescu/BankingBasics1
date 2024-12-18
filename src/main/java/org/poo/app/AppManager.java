@@ -101,8 +101,9 @@ public class AppManager {
                 break;
             case "sendMoney":
                 currentAccount = searchAccountByIban(command.getAccount());
+                currentUser = searchUserByIban(command.getAccount());
                 ClassicAccount receiver = searchAccountByIban(registry.getIBAN(command.getReceiver()));
-                transaction = new SendMoneyTransaction(command, currentAccount, receiver, bank);
+                transaction = new SendMoneyTransaction(command, currentAccount, currentUser, receiver, bank);
                 break;
             case "setAlias":
                 currentAccount = searchAccountByIban(command.getAccount());
@@ -110,6 +111,7 @@ public class AppManager {
                 break;
             case "printTransactions":
                 currentUser = searchUserByEmail(command.getEmail());
+                transaction = new PrintTransTransaction(command, output, currentUser);
                 break;
             default:
                 System.out.println("Invalid command");

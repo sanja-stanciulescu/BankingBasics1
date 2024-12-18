@@ -4,20 +4,31 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.poo.accounts.ClassicAccount;
 import org.poo.exchangeRates.Bnr;
 import org.poo.fileio.CommandInput;
+import org.poo.users.User;
 
 public class SendMoneyTransaction implements TransactionStrategy{
     private String description;
     private int timestamp;
+    private String senderIBAN;
+    private String receiverIBAN;
+    private String amount;
+    private String transferType;
 
     @JsonIgnore
     private ClassicAccount giver;
+    @JsonIgnore
+    private User user;
+    @JsonIgnore
     private ClassicAccount receiver;
+    @JsonIgnore
     private Bnr bank;
+    @JsonIgnore
     private CommandInput command;
 
-    public SendMoneyTransaction(CommandInput command, ClassicAccount giver, ClassicAccount receiver, Bnr bank) {
+    public SendMoneyTransaction(CommandInput command, ClassicAccount giver, User user, ClassicAccount receiver, Bnr bank) {
         this.command = command;
         this.giver = giver;
+        this.user = user;
         this.receiver = receiver;
         this.bank = bank;
         this.timestamp = command.getTimestamp();
@@ -29,6 +40,11 @@ public class SendMoneyTransaction implements TransactionStrategy{
             System.out.println("Cannot make transaction");
             return;
         }
+        senderIBAN = giver.getIban();
+        receiverIBAN = receiver.getIban();
+        amount = command.getAmount() + " " + giver.getCurrency();
+        transferType = "sent";
+
         if (giver.getBalance() - command.getAmount() <= 0) {
             System.out.println("Insufficient funds to make a bank transfer");
         } else {
@@ -41,6 +57,7 @@ public class SendMoneyTransaction implements TransactionStrategy{
             }
             giver.setBalance(giver.getBalance() - command.getAmount());
             receiver.setBalance(receiver.getBalance() + amount);
+            user.getTransactions().add(this);
         }
     }
 
@@ -90,5 +107,37 @@ public class SendMoneyTransaction implements TransactionStrategy{
 
     public void setBank(Bnr bank) {
         this.bank = bank;
+    }
+
+    public String getSenderIBAN() {
+        return senderIBAN;
+    }
+
+    public void setSenderIBAN(String senderIBAN) {
+        this.senderIBAN = senderIBAN;
+    }
+
+    public String getReceiverIBAN() {
+        return receiverIBAN;
+    }
+
+    public void setReceiverIBAN(String receiverIBAN) {
+        this.receiverIBAN = receiverIBAN;
+    }
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public String getTransferType() {
+        return transferType;
+    }
+
+    public void setTransferType(String transferType) {
+        this.transferType = transferType;
     }
 }

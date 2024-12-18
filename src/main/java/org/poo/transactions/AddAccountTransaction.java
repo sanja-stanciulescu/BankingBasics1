@@ -14,12 +14,13 @@ public class AddAccountTransaction implements TransactionStrategy{
 
     @JsonIgnore
     private CommandInput command;
+    @JsonIgnore
     private User currentUser;
+    @JsonIgnore
     private IBANRegistry registry;
 
     public AddAccountTransaction(final CommandInput command, final IBANRegistry registry, final User currentUser) {
         this.timestamp = command.getTimestamp();
-        this.description = command.getDescription();
         this.command = command;
         this.registry = registry;
         this.currentUser = currentUser;
@@ -38,6 +39,7 @@ public class AddAccountTransaction implements TransactionStrategy{
             double interest = command.getInterestRate();
             currentUser.getAccounts().add(new SavingsAccount(iban, currency, "savings", interest));
         }
+        description = "New account created";
         registry.registerIBAN(iban, iban);
         currentUser.getTransactions().add(this);
     }

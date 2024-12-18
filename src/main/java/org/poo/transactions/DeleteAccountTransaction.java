@@ -33,7 +33,7 @@ public class DeleteAccountTransaction implements TransactionStrategy{
         ObjectNode outputNode = mapper.createObjectNode();
         int idx = searchAccount(currentUser, command.getAccount());
         if (idx == -1) {
-            outputNode.put("error", "User and account don't match");
+            outputNode.put("error", "Account couldn't be deleted - see org.poo.transactions for details");
         } else {
             ClassicAccount wantedAccount = currentUser.getAccounts().get(idx);
             if (wantedAccount.getBalance() == 0) {
@@ -42,7 +42,7 @@ public class DeleteAccountTransaction implements TransactionStrategy{
                 outputNode.put("success", "Account deleted");
                 outputNode.put("timestamp", timestamp);
             } else {
-                outputNode.put("error", "Balance should be 0");
+                outputNode.put("error", "Account couldn't be deleted - see org.poo.transactions for details");
                 outputNode.put("timestamp", timestamp);
             }
         }

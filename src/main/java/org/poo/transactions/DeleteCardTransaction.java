@@ -2,24 +2,28 @@ package org.poo.transactions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.poo.accounts.ClassicAccount;
-import org.poo.cards.Card;
 import org.poo.fileio.CommandInput;
 import org.poo.users.User;
 
 public class DeleteCardTransaction implements TransactionStrategy {
     private String description;
     private int timestamp;
+    private String account;
+    private String card;
+    private String cardHolder;
+
 
     @JsonIgnore
     private CommandInput command;
+    @JsonIgnore
     private ClassicAccount currentAccount;
+    @JsonIgnore
     private User currentUser;
 
     public DeleteCardTransaction(final CommandInput command, final ClassicAccount currentAccount, final User currentUser) {
         this.command = command;
         this.currentAccount = currentAccount;
         this.currentUser = currentUser;
-        this.description = command.getDescription();
         this.timestamp = command.getTimestamp();
     }
 
@@ -32,6 +36,10 @@ public class DeleteCardTransaction implements TransactionStrategy {
                 currentAccount.getCards().remove(idx);
                 if (currentUser != null) {
                     currentUser.getTransactions().add(this);
+                    description = "The card has been destroyed";
+                    account = currentAccount.getIban();
+                    card = command.getCardNumber();
+                    cardHolder = currentUser.getEmail();
                 }
             }
         }
@@ -84,5 +92,29 @@ public class DeleteCardTransaction implements TransactionStrategy {
 
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public String getCard() {
+        return card;
+    }
+
+    public void setCard(String card) {
+        this.card = card;
+    }
+
+    public String getCardHolder() {
+        return cardHolder;
+    }
+
+    public void setCardHolder(String cardHolder) {
+        this.cardHolder = cardHolder;
     }
 }

@@ -1,6 +1,7 @@
 package org.poo.transactions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -16,8 +17,11 @@ public class PayOnlineTransaction implements TransactionStrategy{
 
     @JsonIgnore
     private CommandInput command;
+    @JsonIgnore
     private User currentUser;
+    @JsonIgnore
     private ArrayNode output;
+    @JsonIgnore
     private Bnr bank;
 
     public PayOnlineTransaction(final CommandInput command, final ArrayNode output,  final Bnr bank, final User currentUser) {
@@ -43,6 +47,8 @@ public class PayOnlineTransaction implements TransactionStrategy{
                 cardNode.set("output", errorNode);
                 output.add(cardNode);
             } else {
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 String currency = account.getCurrency();
                 double amount;
                 if (!currency.equals(command.getCurrency())) {

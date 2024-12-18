@@ -23,7 +23,6 @@ public class AddCardTransaction implements TransactionStrategy{
         this.command = command;
         this.currentUser = currentUser;
         timestamp = command.getTimestamp();
-        description = command.getDescription();
     }
 
     @Override
@@ -32,6 +31,8 @@ public class AddCardTransaction implements TransactionStrategy{
         if (ret == 1) {
             account = command.getAccount();
             cardHolder = command.getEmail();
+            description = "New card created";
+            currentUser.getTransactions().add(this);
         } else {
             account = command.getAccount();
             cardHolder = command.getEmail();
@@ -46,7 +47,7 @@ public class AddCardTransaction implements TransactionStrategy{
         for (ClassicAccount account : user.getAccounts()) {
             if (account.getIban().equals(iban)) {
                 String cardNumber = Utils.generateCardNumber();
-                this.card = cardNumber;
+                card = cardNumber;
                 if (command.getCommand().equals("createCard")) {
                     account.getCards().add(new Card(cardNumber, "active"));
                 } else if (command.getCommand().equals("createOneTimeCard")) {
@@ -57,5 +58,45 @@ public class AddCardTransaction implements TransactionStrategy{
             }
         }
         return 0;
+    }
+
+    public int getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(int timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getCardHolder() {
+        return cardHolder;
+    }
+
+    public void setCardHolder(String cardHolder) {
+        this.cardHolder = cardHolder;
+    }
+
+    public String getCard() {
+        return card;
+    }
+
+    public void setCard(String card) {
+        this.card = card;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
     }
 }
