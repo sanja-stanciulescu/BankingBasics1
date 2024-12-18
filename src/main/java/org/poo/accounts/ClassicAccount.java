@@ -26,6 +26,8 @@ public class ClassicAccount {
         cards = new ArrayList<>();
     }
 
+    public void changeInterest(double interest) {}
+
     public String getIban() {
         return iban;
     }

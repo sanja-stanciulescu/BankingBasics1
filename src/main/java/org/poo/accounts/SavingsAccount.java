@@ -11,6 +11,11 @@ public class SavingsAccount extends ClassicAccount{
         this.interest = interest;
     }
 
+    @Override
+    public void changeInterest(double interest) {
+        this.interest = interest;
+    }
+
     public double getInterest() {
         return interest;
     }

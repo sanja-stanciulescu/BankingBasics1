@@ -11,9 +11,12 @@ import org.poo.exchangeRates.ExchangeRate;
 import org.poo.fileio.CommandInput;
 import org.poo.users.User;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PayOnlineTransaction implements TransactionStrategy{
     private String description;
     private int timestamp;
+    private Double amount;
+    private String commerciant;
 
     @JsonIgnore
     private CommandInput command;
@@ -29,28 +32,20 @@ public class PayOnlineTransaction implements TransactionStrategy{
         this.output = output;
         this.bank = bank;
         this.currentUser = currentUser;
-        this.description = command.getDescription();
         this.timestamp = command.getTimestamp();
     }
 
     public void makeTransaction() {
         ClassicAccount account = pickCard(command.getCardNumber());
             if (account == null) {
-                ObjectMapper mapper = new ObjectMapper();
-                ObjectNode cardNode = mapper.createObjectNode();
-                cardNode.put("command", command.getCommand());
-                cardNode.put("timestamp", timestamp);
-
-                ObjectNode errorNode = mapper.createObjectNode();
-                errorNode.put("description", "Card not found");
-                errorNode.put("timestamp", timestamp);
-                cardNode.set("output", errorNode);
-                output.add(cardNode);
+                CheckCardStatusTransaction.printError(command, timestamp, output);
             } else {
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 String currency = account.getCurrency();
                 double amount;
+                if (description != null) {
+                    currentUser.getTransactions().add(this);
+                    return;
+                }
                 if (!currency.equals(command.getCurrency())) {
                     double exchangeRate = bank.getExchangeRate(command.getCurrency(), currency);
                     bank.getExchangeRates().add(new ExchangeRate(command.getCurrency(), currency, exchangeRate));
@@ -59,10 +54,15 @@ public class PayOnlineTransaction implements TransactionStrategy{
                     amount = command.getAmount();
                 }
                 if (account.getBalance() - amount <= account.getMinBalance()) {
-                    System.out.println("Insufficient funds");
+                    description = "Insufficient funds";
                 } else {
                     account.setBalance(account.getBalance() - amount);
+
+                    this.amount = amount;
+                    commerciant = command.getCommerciant();
+                    description = "Card payment";
                 }
+                currentUser.getTransactions().add(this);
             }
     }
 
@@ -70,6 +70,11 @@ public class PayOnlineTransaction implements TransactionStrategy{
         for (ClassicAccount account : currentUser.getAccounts()) {
             for (int i = 0; i < account.getCards().size(); i++) {
                 if (account.getCards().get(i).getCardNumber().equals(cardNumber)) {
+                    if (account.getCards().get(i).getStatus().equals("frozen")) {
+                        description = "The card is frozen";
+                    } else {
+                        account.getCards().get(i).useCard();
+                    }
                     return account;
                 }
             }
@@ -124,5 +129,21 @@ public class PayOnlineTransaction implements TransactionStrategy{
 
     public void setBank(Bnr bank) {
         this.bank = bank;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public String getCommerciant() {
+        return commerciant;
+    }
+
+    public void setCommerciant(String commerciant) {
+        this.commerciant = commerciant;
     }
 }

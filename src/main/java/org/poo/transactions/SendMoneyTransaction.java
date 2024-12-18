@@ -1,11 +1,13 @@
 package org.poo.transactions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.poo.accounts.ClassicAccount;
 import org.poo.exchangeRates.Bnr;
 import org.poo.fileio.CommandInput;
 import org.poo.users.User;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SendMoneyTransaction implements TransactionStrategy{
     private String description;
     private int timestamp;
@@ -40,14 +42,14 @@ public class SendMoneyTransaction implements TransactionStrategy{
             System.out.println("Cannot make transaction");
             return;
         }
-        senderIBAN = giver.getIban();
-        receiverIBAN = receiver.getIban();
-        amount = command.getAmount() + " " + giver.getCurrency();
-        transferType = "sent";
 
         if (giver.getBalance() - command.getAmount() <= 0) {
-            System.out.println("Insufficient funds to make a bank transfer");
+            description = "Insufficient funds";
         } else {
+            senderIBAN = giver.getIban();
+            receiverIBAN = receiver.getIban();
+            amount = command.getAmount() + " " + giver.getCurrency();
+            transferType = "sent";
             double amount;
             if (!giver.getCurrency().equals(receiver.getCurrency())) {
                 double exchangeRate = bank.getExchangeRate(giver.getCurrency(), receiver.getCurrency());
@@ -57,8 +59,8 @@ public class SendMoneyTransaction implements TransactionStrategy{
             }
             giver.setBalance(giver.getBalance() - command.getAmount());
             receiver.setBalance(receiver.getBalance() + amount);
-            user.getTransactions().add(this);
         }
+        user.getTransactions().add(this);
     }
 
     public String getDescription() {

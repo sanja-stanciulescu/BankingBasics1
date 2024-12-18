@@ -18,12 +18,14 @@ public class AppManager {
     private Bnr bank;
     private ArrayList<CommerciantCatgeory> commerciantCategories;
     private IBANRegistry registry;
+    private Finder finder;
 
     public AppManager() {
         allUsers = new ArrayList<>();
         bank = new Bnr();
         commerciantCategories = new ArrayList<>();
         registry = new IBANRegistry();
+        finder = new Finder();
     }
 
     public void start(final ArrayNode output, final ObjectInput inputData) {
@@ -61,57 +63,74 @@ public class AppManager {
         TransactionStrategy transaction = null;
         User currentUser;
         ClassicAccount currentAccount;
-        Card currentCard;
         switch (command.getCommand()) {
             case "printUsers":
                 transaction = new PrintUserTransaction(command, output, allUsers);
                 break;
             case "addAccount":
-                currentUser = searchUserByEmail(command.getEmail());
-                transaction = new AddAccountTransaction(command, registry, currentUser);
+                searchUserByEmail(command.getEmail());
+                transaction = new AddAccountTransaction(command, registry, finder.getUser());
                 break;
             case "createCard", "createOneTimeCard":
-                currentUser = searchUserByEmail(command.getEmail());
-                transaction = new AddCardTransaction(command, currentUser);
+                searchUserByEmail(command.getEmail());
+                transaction = new AddCardTransaction(command, finder.getUser());
                 break;
             case "addFunds":
-                currentAccount = searchAccountByIban(command.getAccount());
-                transaction = new AddFundsTransaction(command, currentAccount);
+                searchByIban(command.getAccount());
+                transaction = new AddFundsTransaction(command, finder.getAccount());
                 break;
             case "deleteAccount":
-                currentUser = searchUserByEmail(command.getEmail());
-                transaction = new DeleteAccountTransaction(command, output, currentUser);
+                searchUserByEmail(command.getEmail());
+                transaction = new DeleteAccountTransaction(command, output, finder.getUser());
                 break;
             case "deleteCard":
-                currentAccount = searchAccountByCard(command.getCardNumber());
-                if (currentAccount != null) {
-                    currentUser = searchUserByIban(currentAccount.getIban());
-                } else {
-                    currentUser = null;
-                }
-                transaction = new DeleteCardTransaction(command, currentAccount, currentUser);
+                searchByCard(command.getCardNumber());
+                transaction = new DeleteCardTransaction(command, finder.getAccount(), finder.getUser());
                 break;
             case "setMinimumBalance":
-                currentUser = searchUserByIban(command.getAccount());
-                transaction = new MinBalanceTransaction(command, output, currentUser);
+                searchByIban(command.getAccount());
+                transaction = new MinBalanceTransaction(command, output, finder.getUser(), finder.getAccount());
                 break;
             case "payOnline":
-                currentUser = searchUserByEmail(command.getEmail());
-                transaction = new PayOnlineTransaction(command, output, bank, currentUser);
+                searchUserByEmail(command.getEmail());
+                transaction = new PayOnlineTransaction(command, output, bank, finder.getUser());
                 break;
             case "sendMoney":
-                currentAccount = searchAccountByIban(command.getAccount());
-                currentUser = searchUserByIban(command.getAccount());
-                ClassicAccount receiver = searchAccountByIban(registry.getIBAN(command.getReceiver()));
-                transaction = new SendMoneyTransaction(command, currentAccount, currentUser, receiver, bank);
+                searchByIban(command.getAccount());
+                currentAccount = finder.getAccount();
+                currentUser = finder.getUser();
+                searchByIban(registry.getIBAN(command.getReceiver()));
+                transaction = new SendMoneyTransaction(command, currentAccount, currentUser, finder.getAccount(), bank);
                 break;
             case "setAlias":
-                currentAccount = searchAccountByIban(command.getAccount());
-                transaction = new SetAliasTransaction(command, registry, currentAccount);
+                searchByIban(command.getAccount());
+                transaction = new SetAliasTransaction(command, registry, finder.getAccount());
                 break;
             case "printTransactions":
-                currentUser = searchUserByEmail(command.getEmail());
-                transaction = new PrintTransTransaction(command, output, currentUser);
+                searchUserByEmail(command.getEmail());
+                transaction = new PrintTransTransaction(command, output, finder.getUser());
+                break;
+            case "checkCardStatus":
+                searchByCard(command.getCardNumber());
+                transaction = new CheckCardStatusTransaction(command, output, finder.getUser(), finder.getAccount(), finder.getCard());
+                break;
+            case "changeInterestRate":
+                searchByIban(command.getAccount());
+                transaction = new ChangeInterestTransaction(command, finder.getUser(), finder.getAccount());
+                break;
+            case "splitPayment":
+                ArrayList<Finder> finders = new ArrayList<>();
+                for (int i = 0; i < command.getAccounts().size(); i++) {
+                    finders.add(new Finder());
+                    searchByIban(command.getAccounts().get(i));
+                    finders.get(i).setUser(finder.getUser());
+                    finders.get(i).setAccount(finder.getAccount());
+                    finders.get(i).setCard(finder.getCard());
+                }
+                transaction = new SplitPaymentTransaction(command, finders, bank);
+                break;
+            case "report":
+                searchByIban(command.getAccount());
                 break;
             default:
                 System.out.println("Invalid command");
@@ -120,50 +139,48 @@ public class AppManager {
         return transaction;
     }
 
-    private User searchUserByEmail(final String email) {
+    private void searchUserByEmail(final String email) {
         for (User user : allUsers) {
             if (user.getEmail().equals(email)) {
-                return user;
+                finder.setUser(user);
+                return;
             }
         }
-        return null;
+        finder.setUser(null);
     }
 
-    private User searchUserByIban(final String iban) {
+    private void searchByIban(final String iban) {
         for (User user : allUsers) {
             for (ClassicAccount account : user.getAccounts()) {
                 if (account.getIban().equals(iban)) {
-                    return user;
+                    finder.setUser(user);
+                    finder.setAccount(account);
+                    return;
                 }
             }
         }
 
-        return null;
+        finder.setUser(null);
+        finder.setAccount(null);
     }
 
-    private ClassicAccount searchAccountByIban(final String iban) {
-        for (User user : allUsers) {
-            for (ClassicAccount account : user.getAccounts()) {
-                if (account.getIban().equals(iban)) {
-                    return account;
-                }
-            }
-        }
-        return null;
-    }
-
-    private ClassicAccount searchAccountByCard(String cardNumber) {
+    private void searchByCard(String cardNumber) {
         for (User user : allUsers) {
             for (ClassicAccount account : user.getAccounts()) {
                 for (Card card : account.getCards()) {
                     if (card.getCardNumber().equals(cardNumber)) {
-                        return account;
+                        finder.setUser(user);
+                        finder.setAccount(account);
+                        finder.setCard(card);
+                        return;
                     }
                 }
             }
         }
 
-        return null;
+        finder.setUser(null);
+        finder.setAccount(null);
+        finder.setCard(null);
     }
 
     public ArrayList<User> getAllUsers() {
