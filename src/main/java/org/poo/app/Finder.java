@@ -9,29 +9,57 @@ public class Finder {
     private ClassicAccount account;
     private Card card;
 
-    public Finder() {}
-
+    /**
+     * Retrieves the user associated with the current operation.
+     *
+     * @return the {@code User} object.
+     */
     public User getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    /**
+     * Sets the user associated with the current operation.
+     *
+     * @param user the {@code User} object to set.
+     */
+    public void setUser(final User user) {
         this.user = user;
     }
 
+    /**
+     * Retrieves the account associated with the current operation.
+     *
+     * @return the {@code ClassicAccount} object.
+     */
     public ClassicAccount getAccount() {
         return account;
     }
 
-    public void setAccount(ClassicAccount account) {
+    /**
+     * Sets the account associated with the current operation.
+     *
+     * @param account the {@code ClassicAccount} object to set.
+     */
+    public void setAccount(final ClassicAccount account) {
         this.account = account;
     }
 
+    /**
+     * Retrieves the card associated with the current operation.
+     *
+     * @return the {@code Card} object.
+     */
     public Card getCard() {
         return card;
     }
 
-    public void setCard(Card card) {
+    /**
+     * Sets the card associated with the current operation.
+     *
+     * @param card the {@code Card} object to set.
+     */
+    public void setCard(final Card card) {
         this.card = card;
     }
 }

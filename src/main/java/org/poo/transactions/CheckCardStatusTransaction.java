@@ -26,7 +26,23 @@ public class CheckCardStatusTransaction implements TransactionStrategy {
     @JsonIgnore
     private ArrayNode output;
 
-    public CheckCardStatusTransaction(final CommandInput command, final ArrayNode output, final User user, final ClassicAccount currentAccount, final Card card) {
+    /**
+     * Constructs a new {@code CheckCardStatusTransaction} with the given command,
+     * output, user, account, and card.
+     *
+     * @param command the command input containing the transaction details.
+     * @param output the output array where the transaction result will be stored.
+     * @param user the user who owns the account and card.
+     * @param currentAccount the account associated with the card.
+     * @param card the card whose status will be checked and updated.
+     */
+    public CheckCardStatusTransaction(
+            final CommandInput command,
+            final ArrayNode output,
+            final User user,
+            final ClassicAccount currentAccount,
+            final Card card
+    ) {
         this.command = command;
         this.output = output;
         this.user = user;
@@ -34,6 +50,12 @@ public class CheckCardStatusTransaction implements TransactionStrategy {
         this.card = card;
     }
 
+    /**
+     * Executes the transaction by checking the account balance and updating the card status.
+     * If the balance is below the minimum required, the card status is set to "frozen".
+     * If the balance is low but above the minimum threshold, the card status is set to "warning".
+     * If the account or card is null, an error message is added to the output.
+     */
     public void makeTransaction() {
         if (currentAccount == null || card == null) {
             printError(command, command.getTimestamp(), output);
@@ -52,11 +74,22 @@ public class CheckCardStatusTransaction implements TransactionStrategy {
         }
     }
 
-    static void printError(CommandInput command, int timestamp, ArrayNode output) {
+    /**
+     * Adds an error message to the output if the card is not found.
+     *
+     * @param command the command input containing the details of the transaction.
+     * @param timestamp the timestamp of the transaction.
+     * @param output the output array where the error message will be added.
+     */
+    static void printError(
+            final CommandInput command,
+            final int timestamp,
+            final ArrayNode output
+    ) {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode cardNode = mapper.createObjectNode();
         cardNode.put("command", command.getCommand());
-        cardNode.put("timestamp", command.getTimestamp());
+        cardNode.put("timestamp", timestamp);
 
         ObjectNode errorNode = mapper.createObjectNode();
         errorNode.put("description", "Card not found");
@@ -65,14 +98,29 @@ public class CheckCardStatusTransaction implements TransactionStrategy {
         output.add(cardNode);
     }
 
+    /**
+     * Gets the description of the transaction.
+     *
+     * @return the description of the transaction.
+     */
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    /**
+     * Sets the description of the transaction.
+     *
+     * @param description the description to set.
+     */
+    public void setDescription(final String description) {
         this.description = description;
     }
 
+    /**
+     * Gets the timestamp of the transaction.
+     *
+     * @return the timestamp of the transaction.
+     */
     @Override
     public int getTimestamp() {
         if (timestamp != null) {
@@ -81,47 +129,84 @@ public class CheckCardStatusTransaction implements TransactionStrategy {
         return -1;
     }
 
-    public void setTimestamp(int timestamp) {
+    /**
+     * Sets the timestamp for the transaction.
+     *
+     * @param timestamp the timestamp to set.
+     */
+    public void setTimestamp(final int timestamp) {
         this.timestamp = timestamp;
     }
 
+    /**
+     * Gets the command input associated with the transaction.
+     *
+     * @return the command input.
+     */
     public CommandInput getCommand() {
         return command;
     }
 
-    public void setCommand(CommandInput command) {
+    /**
+     * Sets the command input for the transaction.
+     *
+     * @param command the command input to set.
+     */
+    public void setCommand(final CommandInput command) {
         this.command = command;
     }
 
-    public ClassicAccount getCurrentAccount() {
-        return currentAccount;
-    }
-
-    public void setCurrentAccount(ClassicAccount currentAccount) {
-        this.currentAccount = currentAccount;
-    }
-
+    /**
+     * Gets the card associated with the transaction.
+     *
+     * @return the card.
+     */
     public Card getCard() {
         return card;
     }
 
-    public void setCard(Card card) {
+    /**
+     * Sets the card for the transaction.
+     *
+     * @param card the card to set.
+     */
+    public void setCard(final Card card) {
         this.card = card;
     }
 
+    /**
+     * Gets the output array where the results of the transaction are stored.
+     *
+     * @return the output array.
+     */
     public ArrayNode getOutput() {
         return output;
     }
 
-    public void setOutput(ArrayNode output) {
+    /**
+     * Sets the output array for the transaction.
+     *
+     * @param output the output array to set.
+     */
+    public void setOutput(final ArrayNode output) {
         this.output = output;
     }
 
+    /**
+     * Gets the user associated with the transaction.
+     *
+     * @return the user.
+     */
     public User getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    /**
+     * Sets the user for the transaction.
+     *
+     * @param user the user to set.
+     */
+    public void setUser(final User user) {
         this.user = user;
     }
 }

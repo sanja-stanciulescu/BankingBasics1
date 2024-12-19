@@ -12,13 +12,29 @@ public class SpendingsReportTransaction implements TransactionStrategy {
     private ArrayNode output;
     private int timestamp;
 
-    public SpendingsReportTransaction(CommandInput command, ArrayNode output, ClassicAccount account) {
+    /**
+     * Constructs a new {@code SpendingsReportTransaction} with the given command input,
+     * output node, and account.
+     *
+     * @param command the command input containing transaction details.
+     * @param output the output node where the result is added.
+     * @param account the account for which the spending report will be generated.
+     */
+    public SpendingsReportTransaction(
+            final CommandInput command,
+            final ArrayNode output,
+            final ClassicAccount account
+    ) {
         this.command = command;
         this.output = output;
         this.account = account;
         this.timestamp = command.getTimestamp();
     }
 
+    /**
+     * Executes the transaction by generating the spending report for the account.
+     * If the account is invalid or not a classic account, an error message is returned.
+     */
     public void makeTransaction() {
         if (account == null) {
             ObjectMapper mapper = new ObjectMapper();
@@ -53,12 +69,22 @@ public class SpendingsReportTransaction implements TransactionStrategy {
         output.add(node);
     }
 
+    /**
+     * Gets the timestamp of the transaction.
+     *
+     * @return the timestamp of the transaction.
+     */
     @Override
     public int getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(int timestamp) {
+    /**
+     * Sets the timestamp for the transaction.
+     *
+     * @param timestamp the timestamp to set.
+     */
+    public void setTimestamp(final int timestamp) {
         this.timestamp = timestamp;
     }
 }

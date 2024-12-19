@@ -21,7 +21,22 @@ public class ChangeInterestTransaction implements TransactionStrategy {
     @JsonIgnore
     private ArrayNode output;
 
-    public ChangeInterestTransaction(final CommandInput command, final ArrayNode output, final User user, final ClassicAccount account) {
+    /**
+     * Constructs a new {@code ChangeInterestTransaction} with the given command,
+     * output, user, account, and timestamp.
+     *
+     * @param command the command input containing the details of the transaction,
+     *                including the new interest rate.
+     * @param output the output array where the transaction result will be stored.
+     * @param user the user who owns the account.
+     * @param account the account whose interest rate will be changed.
+     */
+    public ChangeInterestTransaction(
+            final CommandInput command,
+            final ArrayNode output,
+            final User user,
+            final ClassicAccount account
+    ) {
         this.command = command;
         this.output = output;
         this.user = user;
@@ -30,6 +45,11 @@ public class ChangeInterestTransaction implements TransactionStrategy {
         description = "Interest rate of the account changed to " + command.getInterestRate();
     }
 
+    /**
+     * Executes the transaction by changing the interest rate of the account
+     * if it is not a "classic" account.
+     * If the account is a "classic" account, an error message is added to the output.
+     */
     public void makeTransaction() {
         if (user == null || account == null) {
             System.out.println("Could not change interest rate");
@@ -54,20 +74,39 @@ public class ChangeInterestTransaction implements TransactionStrategy {
         user.getTransactions().add(this);
     }
 
-
+    /**
+     * Gets the description of the transaction.
+     *
+     * @return the description of the transaction.
+     */
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    /**
+     * Sets the description for the transaction.
+     *
+     * @param description the description to set.
+     */
+    public void setDescription(final String description) {
         this.description = description;
     }
 
+    /**
+     * Gets the timestamp of the transaction.
+     *
+     * @return the timestamp of the transaction.
+     */
     public int getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(int timestamp) {
+    /**
+     * Sets the timestamp for the transaction.
+     *
+     * @param timestamp the timestamp to set.
+     */
+    public void setTimestamp(final int timestamp) {
         this.timestamp = timestamp;
     }
 }

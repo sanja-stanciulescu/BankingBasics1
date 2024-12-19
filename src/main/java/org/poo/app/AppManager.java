@@ -17,6 +17,9 @@ public class AppManager {
     private IBANRegistry registry;
     private Finder finder;
 
+    /**
+     * Constructs an instance of {@code AppManager} and initializes its fields.
+     */
     public AppManager() {
         allUsers = new ArrayList<>();
         bank = new Bnr();
@@ -24,6 +27,13 @@ public class AppManager {
         finder = new Finder();
     }
 
+    /**
+     * Starts the application, initializes users, sets up the bank exchange rates,
+     * and processes a list of commands.
+     *
+     * @param output    the {@code ArrayNode} to store the output of processed commands.
+     * @param inputData the {@code ObjectInput} containing user data, exchange rates, and commands.
+     */
     public void start(final ArrayNode output, final ObjectInput inputData) {
         //Initialize the list of users
         for (int i = 0; i < inputData.getUsers().length; i++) {
@@ -44,7 +54,19 @@ public class AppManager {
         }
     }
 
-    public TransactionStrategy useTransactionFactory(final ArrayNode output, final CommandInput command) {
+    /**
+     * Creates a {@code TransactionStrategy} object based on the specified command
+     * and executes the associated operation.
+     *
+     * @param output  the {@code ArrayNode} to store the results of certain commands.
+     * @param command the {@code CommandInput} containing details about the requested operation.
+     * @return a {@code TransactionStrategy} object representing the operation,
+     * or {@code null} if the command is invalid.
+     */
+    public TransactionStrategy useTransactionFactory(
+            final ArrayNode output,
+            final CommandInput command
+    ) {
         TransactionStrategy transaction = null;
         User currentUser;
         ClassicAccount currentAccount;
@@ -70,22 +92,26 @@ public class AppManager {
                 break;
             case "deleteCard":
                 searchByCard(command.getCardNumber());
-                transaction = new DeleteCardTransaction(command, finder.getAccount(), finder.getUser());
+                transaction = new DeleteCardTransaction(command, finder.getAccount(),
+                                                        finder.getUser());
                 break;
             case "setMinimumBalance":
                 searchByIban(command.getAccount());
-                transaction = new MinBalanceTransaction(command, output, finder.getUser(), finder.getAccount());
+                transaction = new MinBalanceTransaction(command, output, finder.getUser(),
+                                                        finder.getAccount());
                 break;
             case "payOnline":
                 searchUserByEmail(command.getEmail());
-                transaction = new PayOnlineTransaction(command, output, bank, finder.getUser());
+                transaction = new PayOnlineTransaction(command, output, bank,
+                                                        finder.getUser());
                 break;
             case "sendMoney":
                 searchByIban(command.getAccount());
                 currentAccount = finder.getAccount();
                 currentUser = finder.getUser();
                 searchByIban(registry.getIBAN(command.getReceiver()));
-                transaction = new SendMoneyTransaction(command, currentAccount, currentUser, finder.getAccount(), finder.getUser(), bank);
+                transaction = new SendMoneyTransaction(command, currentAccount, currentUser,
+                                                       finder.getAccount(), finder.getUser(), bank);
                 break;
             case "setAlias":
                 searchByIban(command.getAccount());
@@ -97,11 +123,13 @@ public class AppManager {
                 break;
             case "checkCardStatus":
                 searchByCard(command.getCardNumber());
-                transaction = new CheckCardStatusTransaction(command, output, finder.getUser(), finder.getAccount(), finder.getCard());
+                transaction = new CheckCardStatusTransaction(command, output, finder.getUser(),
+                                                             finder.getAccount(), finder.getCard());
                 break;
             case "changeInterestRate":
                 searchByIban(command.getAccount());
-                transaction = new ChangeInterestTransaction(command, output, finder.getUser(), finder.getAccount());
+                transaction = new ChangeInterestTransaction(command, output,
+                                                            finder.getUser(), finder.getAccount());
                 break;
             case "addInterest":
                 searchByIban(command.getAccount());
@@ -133,6 +161,11 @@ public class AppManager {
         return transaction;
     }
 
+    /**
+     * Searches for a user by their email address and sets the result in the {@code Finder} object.
+     *
+     * @param email the email address of the user to search for.
+     */
     private void searchUserByEmail(final String email) {
         for (User user : allUsers) {
             if (user.getEmail().equals(email)) {
@@ -143,6 +176,12 @@ public class AppManager {
         finder.setUser(null);
     }
 
+    /**
+     * Searches for an account by its IBAN and sets the corresponding user and
+     * account in the {@code Finder} object.
+     *
+     * @param iban the IBAN of the account to search for.
+     */
     private void searchByIban(final String iban) {
         for (User user : allUsers) {
             for (ClassicAccount account : user.getAccounts()) {
@@ -158,7 +197,13 @@ public class AppManager {
         finder.setAccount(null);
     }
 
-    private void searchByCard(String cardNumber) {
+    /**
+     * Searches for a card by its card number and sets the corresponding user, account,
+     * and card in the {@code Finder} object.
+     *
+     * @param cardNumber the card number to search for.
+     */
+    private void searchByCard(final String cardNumber) {
         for (User user : allUsers) {
             for (ClassicAccount account : user.getAccounts()) {
                 for (Card card : account.getCards()) {
@@ -175,13 +220,5 @@ public class AppManager {
         finder.setUser(null);
         finder.setAccount(null);
         finder.setCard(null);
-    }
-
-    public ArrayList<User> getAllUsers() {
-        return allUsers;
-    }
-
-    public void setAllUsers(ArrayList<User> allUsers) {
-        this.allUsers = allUsers;
     }
 }

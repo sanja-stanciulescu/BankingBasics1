@@ -8,7 +8,7 @@ import org.poo.fileio.CommandInput;
 import org.poo.users.User;
 import org.poo.utils.Utils;
 
-public class AddAccountTransaction implements TransactionStrategy{
+public class AddAccountTransaction implements TransactionStrategy {
     private int timestamp;
     private String description;
 
@@ -19,13 +19,30 @@ public class AddAccountTransaction implements TransactionStrategy{
     @JsonIgnore
     private IBANRegistry registry;
 
-    public AddAccountTransaction(final CommandInput command, final IBANRegistry registry, final User currentUser) {
+    /**
+     * Constructs a new {@code AddAccountTransaction} based on the given command input,
+     * IBAN registry, and user.
+     *
+     * @param command the command input containing details about the account type and currency.
+     * @param registry the IBAN registry used to register the new account's IBAN.
+     * @param currentUser the user who will receive the new account.
+     */
+    public AddAccountTransaction(
+            final CommandInput command,
+            final IBANRegistry registry,
+            final User currentUser
+    ) {
         this.timestamp = command.getTimestamp();
         this.command = command;
         this.registry = registry;
         this.currentUser = currentUser;
     }
 
+    /**
+     * Executes the transaction, which includes creating a new account
+     * (either a {@link ClassicAccount} or {@link SavingsAccount}), registering the IBAN
+     * and adding the account to the user's list of accounts.
+     */
     @Override
     public void makeTransaction() {
         String iban = "";
@@ -45,44 +62,57 @@ public class AddAccountTransaction implements TransactionStrategy{
         currentUser.getTransactions().add(this);
     }
 
-
+    /**
+     * Gets the timestamp of the transaction.
+     *
+     * @return the timestamp of the transaction.
+     */
     public int getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(int timestamp) {
+    /**
+     * Sets the timestamp for the transaction.
+     *
+     * @param timestamp the timestamp to set.
+     */
+    public void setTimestamp(final int timestamp) {
         this.timestamp = timestamp;
     }
 
+    /**
+     * Gets the description of the transaction.
+     *
+     * @return the description of the transaction.
+     */
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    /**
+     * Sets the description for the transaction.
+     *
+     * @param description the description to set.
+     */
+    public void setDescription(final String description) {
         this.description = description;
     }
 
+    /**
+     * Gets the command input that initiated the transaction.
+     *
+     * @return the command input.
+     */
     public CommandInput getCommand() {
         return command;
     }
 
-    public void setCommand(CommandInput command) {
+    /**
+     * Sets the command input that initiated the transaction.
+     *
+     * @param command the command input to set.
+     */
+    public void setCommand(final CommandInput command) {
         this.command = command;
-    }
-
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(User currentUser) {
-        this.currentUser = currentUser;
-    }
-
-    public IBANRegistry getRegistry() {
-        return registry;
-    }
-
-    public void setRegistry(IBANRegistry registry) {
-        this.registry = registry;
     }
 }

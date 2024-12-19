@@ -8,7 +8,7 @@ import org.poo.accounts.ClassicAccount;
 import org.poo.fileio.CommandInput;
 import org.poo.users.User;
 
-public class MinBalanceTransaction implements TransactionStrategy{
+public class MinBalanceTransaction implements TransactionStrategy {
     private String description;
     private int timestamp;
 
@@ -18,7 +18,21 @@ public class MinBalanceTransaction implements TransactionStrategy{
     private ClassicAccount account;
     private ArrayNode output;
 
-    public MinBalanceTransaction(final CommandInput command, final ArrayNode output, final User currentUser, final ClassicAccount account) {
+    /**
+     * Constructs a new {@code MinBalanceTransaction} with the given command, output,
+     * user, and account.
+     *
+     * @param command the command input containing the transaction details.
+     * @param output the output to store the results of the transaction.
+     * @param currentUser the user performing the transaction.
+     * @param account the account for which the minimum balance will be set.
+     */
+    public MinBalanceTransaction(
+            final CommandInput command,
+            final ArrayNode output,
+            final User currentUser,
+            final ClassicAccount account
+    ) {
         this.command = command;
         this.output = output;
         this.currentUser = currentUser;
@@ -27,6 +41,10 @@ public class MinBalanceTransaction implements TransactionStrategy{
         this.timestamp = command.getTimestamp();
     }
 
+    /**
+     * Executes the transaction by setting the minimum balance of the account.
+     * If the user or account is invalid, an error is added to the output.
+     */
     public void makeTransaction() {
         if (currentUser == null || account == null) {
             ObjectMapper mapper = new ObjectMapper();
@@ -39,43 +57,75 @@ public class MinBalanceTransaction implements TransactionStrategy{
         }
     }
 
+    /**
+     * Gets the description of the transaction.
+     *
+     * @return the description of the transaction.
+     */
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    /**
+     * Sets the description of the transaction.
+     *
+     * @param description the description to set.
+     */
+    public void setDescription(final String description) {
         this.description = description;
     }
 
+    /**
+     * Gets the timestamp of the transaction.
+     *
+     * @return the timestamp of the transaction.
+     */
     public int getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(int timestamp) {
+    /**
+     * Sets the timestamp for the transaction.
+     *
+     * @param timestamp the timestamp to set.
+     */
+    public void setTimestamp(final int timestamp) {
         this.timestamp = timestamp;
     }
 
+    /**
+     * Gets the command input associated with the transaction.
+     *
+     * @return the command input.
+     */
     public CommandInput getCommand() {
         return command;
     }
 
-    public void setCommand(CommandInput command) {
+    /**
+     * Sets the command input for the transaction.
+     *
+     * @param command the command input to set.
+     */
+    public void setCommand(final CommandInput command) {
         this.command = command;
     }
 
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(User currentUser) {
-        this.currentUser = currentUser;
-    }
-
+    /**
+     * Gets the output associated with the transaction.
+     *
+     * @return the output.
+     */
     public ArrayNode getOutput() {
         return output;
     }
 
-    public void setOutput(ArrayNode output) {
+    /**
+     * Sets the output for the transaction.
+     *
+     * @param output the output to set.
+     */
+    public void setOutput(final ArrayNode output) {
         this.output = output;
     }
 }

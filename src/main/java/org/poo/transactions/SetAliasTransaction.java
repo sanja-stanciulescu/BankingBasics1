@@ -14,7 +14,18 @@ public class SetAliasTransaction implements TransactionStrategy {
     private ClassicAccount account;
     private IBANRegistry registry;
 
-    public SetAliasTransaction(CommandInput command, IBANRegistry registry, ClassicAccount account) {
+    /**
+     * Constructs a new {@code SetAliasTransaction} with the given command input,
+     * alias registry, and the account to update.
+     *
+     * @param command the command input containing transaction details.
+     * @param registry the registry to update the alias in.
+     * @param account the account for which the alias will be set.
+     */
+    public SetAliasTransaction(
+            final CommandInput command,
+            final IBANRegistry registry,
+            final ClassicAccount account) {
         this.command = command;
         this.registry = registry;
         this.account = account;
@@ -22,49 +33,85 @@ public class SetAliasTransaction implements TransactionStrategy {
         this.timestamp = command.getTimestamp();
     }
 
+    /**
+     * Executes the transaction by updating the alias for the specified account.
+     * If the alias update fails, an error message is printed to the console.
+     */
     public void makeTransaction() {
        if (!registry.updateAlias(account.getIban(), command.getAlias())) {
            System.out.println("Could not update the alias");
        }
     }
 
+    /**
+     * Gets the description of the transaction.
+     *
+     * @return the description of the transaction.
+     */
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    /**
+     * Sets the description for the transaction.
+     *
+     * @param description the description to set.
+     */
+    public void setDescription(final String description) {
         this.description = description;
     }
 
+    /**
+     * Gets the timestamp of the transaction.
+     *
+     * @return the timestamp of the transaction.
+     */
     public int getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(int timestamp) {
+    /**
+     * Sets the timestamp for the transaction.
+     *
+     * @param timestamp the timestamp to set.
+     */
+    public void setTimestamp(final int timestamp) {
         this.timestamp = timestamp;
     }
 
+    /**
+     * Gets the command input containing transaction details.
+     *
+     * @return the command input for the transaction.
+     */
     public CommandInput getCommand() {
         return command;
     }
 
-    public void setCommand(CommandInput command) {
+    /**
+     * Sets the command input for the transaction.
+     *
+     * @param command the command input to set.
+     */
+    public void setCommand(final CommandInput command) {
         this.command = command;
     }
 
+    /**
+     * Gets the account for which the alias is being set.
+     *
+     * @return the account for the alias transaction.
+     */
     public ClassicAccount getAccount() {
         return account;
     }
 
-    public void setAccount(ClassicAccount account) {
+    /**
+     * Sets the account for the alias transaction.
+     *
+     * @param account the account to set.
+     */
+    public void setAccount(final ClassicAccount account) {
         this.account = account;
-    }
-
-    public IBANRegistry getRegistry() {
-        return registry;
-    }
-
-    public void setRegistry(IBANRegistry registry) {
-        this.registry = registry;
     }
 }
