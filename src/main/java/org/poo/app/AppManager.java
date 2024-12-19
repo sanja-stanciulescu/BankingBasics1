@@ -16,14 +16,12 @@ import java.util.ArrayList;
 public class AppManager {
     private ArrayList<User> allUsers;
     private Bnr bank;
-    private ArrayList<CommerciantCatgeory> commerciantCategories;
     private IBANRegistry registry;
     private Finder finder;
 
     public AppManager() {
         allUsers = new ArrayList<>();
         bank = new Bnr();
-        commerciantCategories = new ArrayList<>();
         registry = new IBANRegistry();
         finder = new Finder();
     }
@@ -36,17 +34,6 @@ public class AppManager {
 
         //Initialize the board where exchange rates are showcased
         bank.setUp(inputData);
-
-        //Initialize possible categories for commerciants
-        int length;
-        if (inputData.getCommerciants() != null) {
-            length = inputData.getCommerciants().length;
-        } else {
-            length = 0;
-        }
-        for (int i = 0; i < length; i++) {
-            commerciantCategories.add(new CommerciantCatgeory(inputData.getCommerciants()[i]));
-        }
 
         //Parse the commands
         CommandInput[] commands = inputData.getCommands();
@@ -131,6 +118,7 @@ public class AppManager {
                 break;
             case "report":
                 searchByIban(command.getAccount());
+                transaction = new ReportTransaction(command, output, finder.getAccount());
                 break;
             default:
                 System.out.println("Invalid command");
@@ -189,13 +177,5 @@ public class AppManager {
 
     public void setAllUsers(ArrayList<User> allUsers) {
         this.allUsers = allUsers;
-    }
-
-    public ArrayList<CommerciantCatgeory> getCommerciantCategories() {
-        return commerciantCategories;
-    }
-
-    public void setCommerciantCategories(ArrayList<CommerciantCatgeory> commerciantCategories) {
-        this.commerciantCategories = commerciantCategories;
     }
 }

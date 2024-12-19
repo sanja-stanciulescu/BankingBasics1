@@ -75,6 +75,9 @@ public class PayOnlineTransaction implements TransactionStrategy{
                     } else {
                         account.getCards().get(i).useCard();
                     }
+                    if (account.getType().equals("classic")) {
+                        account.getTransactions().add(this);
+                    }
                     return account;
                 }
             }

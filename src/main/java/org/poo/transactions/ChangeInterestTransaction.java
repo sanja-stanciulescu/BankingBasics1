@@ -29,6 +29,7 @@ public class ChangeInterestTransaction implements TransactionStrategy {
             System.out.println("Could not change interest rate");
         }
         account.changeInterest(command.getInterestRate());
+        account.getTransactions().add(this);
         user.getTransactions().add(this);
     }
 

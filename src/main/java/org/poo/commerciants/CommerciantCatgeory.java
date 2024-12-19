@@ -1,41 +1,27 @@
 package org.poo.commerciants;
 
-import org.poo.fileio.CommerciantInput;
-
-import java.util.List;
-
 public class CommerciantCatgeory {
-    private int id;
-    private String description;
-    private List<String> commerciants;
+    private String commerciant;
+    private double total;
 
-    public CommerciantCatgeory(CommerciantInput other) {
-        this.id = other.getId();
-        this.description = other.getDescription();
-        this.commerciants = other.getCommerciants();
+    public CommerciantCatgeory(String commerciant, double total) {
+        this.commerciant = commerciant;
+        this.total = total;
     }
 
-    public int getId() {
-        return id;
+    public String getCommerciant() {
+        return commerciant;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setCommerciant(String commerciant) {
+        this.commerciant = commerciant;
     }
 
-    public String getDescription() {
-        return description;
+    public double getTotal() {
+        return total;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<String> getCommerciants() {
-        return commerciants;
-    }
-
-    public void setCommerciants(List<String> commerciants) {
-        this.commerciants = commerciants;
+    public void setTotal(double total) {
+        this.total = total;
     }
 }

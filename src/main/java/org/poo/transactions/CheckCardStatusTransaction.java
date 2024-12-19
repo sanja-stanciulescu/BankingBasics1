@@ -73,8 +73,12 @@ public class CheckCardStatusTransaction implements TransactionStrategy {
         this.description = description;
     }
 
-    public Integer getTimestamp() {
-        return timestamp;
+    @Override
+    public int getTimestamp() {
+        if (timestamp != null) {
+            return timestamp;
+        }
+        return -1;
     }
 
     public void setTimestamp(int timestamp) {

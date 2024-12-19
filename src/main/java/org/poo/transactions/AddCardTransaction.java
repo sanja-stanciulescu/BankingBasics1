@@ -53,6 +53,9 @@ public class AddCardTransaction implements TransactionStrategy{
                 } else if (command.getCommand().equals("createOneTimeCard")) {
                     account.getCards().add(new OneTimeCard(cardNumber));
                 }
+                if (account.getType().equals("classic")) {
+                    account.getTransactions().add(this);
+                }
 
                 return 1;
             }

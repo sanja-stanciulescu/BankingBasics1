@@ -3,20 +3,27 @@ package org.poo.accounts;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.poo.cards.Card;
+import org.poo.commerciants.CommerciantCatgeory;
+import org.poo.transactions.TransactionStrategy;
 
 import java.util.ArrayList;
 
 public class ClassicAccount {
-    private double balance;
-    private String currency;
-    private String type;
-    private ArrayList<Card> cards;
-
-    @JsonProperty("IBAN")
-    private String iban;
+    protected double balance;
+    protected String currency;
+    protected String type;
+    protected ArrayList<Card> cards;
 
     @JsonIgnore
-    private double minBalance;
+    private ArrayList<TransactionStrategy> transactions;
+    @JsonIgnore
+    private ArrayList<CommerciantCatgeory> commerciants;
+
+    @JsonProperty("IBAN")
+    protected String iban;
+
+    @JsonIgnore
+    protected double minBalance;
 
     public ClassicAccount(String iban, String currency, String type) {
         this.iban = iban;
@@ -24,6 +31,7 @@ public class ClassicAccount {
         this.type = type;
         balance = 0;
         cards = new ArrayList<>();
+        transactions = new ArrayList<>();
     }
 
     public void changeInterest(double interest) {}
@@ -74,5 +82,13 @@ public class ClassicAccount {
 
     public void setMinBalance(double minBalance) {
         this.minBalance = minBalance;
+    }
+
+    public ArrayList<TransactionStrategy> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(ArrayList<TransactionStrategy> transactions) {
+        this.transactions = transactions;
     }
 }

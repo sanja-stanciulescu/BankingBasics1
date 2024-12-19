@@ -33,6 +33,7 @@ public class AddAccountTransaction implements TransactionStrategy{
             iban = Utils.generateIBAN();
             String currency = command.getCurrency();
             currentUser.getAccounts().add(new ClassicAccount(iban, currency, "classic"));
+            currentUser.getAccounts().getLast().getTransactions().add(this);
         } else if (command.getAccountType().equals("savings")) {
             iban = Utils.generateIBAN();
             String currency = command.getCurrency();

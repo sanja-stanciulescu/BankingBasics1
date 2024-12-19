@@ -61,6 +61,9 @@ public class SendMoneyTransaction implements TransactionStrategy{
             receiver.setBalance(receiver.getBalance() + amount);
         }
         user.getTransactions().add(this);
+        if (giver.getType().equals("classic")) {
+            giver.getTransactions().add(this);
+        }
     }
 
     public String getDescription() {
