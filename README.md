@@ -1,45 +1,73 @@
 # Project Assignment POO  - J. POO Morgan - Phase One
 
-![](https://s.yimg.com/ny/api/res/1.2/aN0SfZTtLF5hLNO0wIN3gg--/YXBwaWQ9aGlnaGxhbmRlcjt3PTcwNTtoPTQyNztjZj13ZWJw/https://o.aolcdn.com/hss/storage/midas/b23d8b7f62a50a7b79152996890aa052/204855412/fit.gif)
+<div align="center"><img src="https://media1.tenor.com/m/l2KqipO86aAAAAAd/banking-that.gif" width="500px" alt=""></div>
 
-#### Assignment Link: [https://ocw.cs.pub.ro/courses/poo-ca-cd/teme/2024/proiect-e1](https://ocw.cs.pub.ro/courses/poo-ca-cd/teme/2024/proiect-e1)
+## Notice
+In the git_log.txt file, there will be commits done under the user: tomaariciu <tomaariciu@gmail.com>. 
+Due to some problems with my laptop, I worked from one of my classmate's laptop and did not change his
+--global user.name.
+
+## Personal Overview
+This project is a complex banking system built to simulate various banking operations.
+
+It follows object-oriented programming principles and, in addition to the latest project, uses design patterns, such as
+Strategy and Factory.
 
 ## Skel Structure
 
 * src/
-    * checker/ - checker files
-    * fileio/ - contains classes used to read data from the json files
-    * main/
-        * Main - the Main class runs the checker on your implementation. Add the entry point to your implementation in it. Run Main to test your implementation from the IDE or from command line.
-        * Test - run the main method from Test class with the name of the input file from the command line and the result will be written
-          to the out.txt file. Thus, you can compare this result with ref.
+  * accounts/
+    * ClassicAccount - contains the standard accounts
+    * SavingsAccount - contains the account that are of type savings and have the additional interestRate
+  * app/
+    * AppManager - contains the methods that handle the entire workflow of the project
+    * Finder - helper class used for optimizing the search for users, accounts or cards
+    * IBANRegistry - contains all the IBANs associated with themselves or an alias
+  * cards/
+    * Card - contains the methods for a standard card, with unlimited payment possibilities
+    * OneTimeCard - contains the methods for an one-time card, that will be replaced after each payment
+  * checker/ - checker files
+  * commerciants/
+    * Commerciant - contains the list of payments made to easily create Spending Reports
+  * exchangeRates/
+    * Bnr - the Romanian National Bank where all exchange rates are shown in real time
+    * ExchangeRate - contains the methods for managing rates from the BNR
+    * ExchangeRateNode - class used in the conversion from one currency to the other
+  * fileio/ - contains classes used to read data from the json files
+  * main/
+    * Main - the Main class runs the checker on your implementation. Add the entry point to your implementation in it. Run Main to test your implementation from the IDE or from command line.
+    * Test - run the main method from Test class with the name of the input file from the command line and the result will be written
+                 to the out.txt file. Thus, you can compare this result with ref.
+  * transactions/
+    * Transaction - the interface that will be further implemented to create any time of transaction that should be available in the banking system
+    * Contains maaany classes for each transaction
+  * users/
+    * User - contains the particular fields for a user
 * input/ - contains the tests in JSON format
 * ref/ - contains all reference output for the tests in JSON format
 
-## Tests
+## Work flow
 
-Tests Basic 1 - 8: Infrastructure \
-Tests Functional 9 - 17: Advanced \
-Tests Flow 18 - 20: Large Input
+The flow of the banking system is designed to manage multiple banking transactions and user commands.
 
-1. test01_create - 2p
-2. test02_delete - 2p
-3. test03_one_time_card - 2p
-4. test04_funds - 2p
-5. test05_money_flow - 2p
-6. test06_non_existing - 2p
-7. test07_send_money_part1 - 3p
-8. test08_send_money_part2 - 3p
-9. test09_print_transactions - 3p
-10. test10_errors - 3p
-11. test11_card_status - 5p
-12. test12_continuous_payments - 5p
-13. test13_savings_account - 5p
-14. test14_split_payments - 5p
-15. test15_every_payment - 5p
-16. test16_report - 5p
-17. test17_spendings_report - 5p
-18. test18_large_input_1 - 7p
-19. test19_large_input_2 - 7p
-20. test19_large_input_3 - 7p
+Here's how the operations generally unfold:
+1. User initialization: users are instantiated, without any accounts or cards at the beginning;
+2. Transaction Execution: users can execute various commands in the following way:
+    * using the Factory design pattern, a new transaction object is instantiated;
+    * using the Strategy design pattern, the output or other classes will suffer different changes, depending on the transaction
+    * the array of commands is parsed until there are no command left;
+
+## Key features
+
+* Users can manage their personal details and accounts, including multiple types of accounts or cards;
+* There are many real-life functionalities developed within the project, so the entire assignment was a good practice ;
+* The system provides error messages for invalid operations in the output file, as well as in the user or transaction reports.
+* The system is built with extensibility in mind. The TransactionStrategy interface allows the introduction of new transactions types with minimal impact on the overall system.
+
+## Key Takeaways
+
+1. This project deepened my understanding of object-oriented programming, particularly in managing complex data structures like users, accounts, and transactions.
+2. I applied design patterns, especially in terms of transaction handling and error management, which made the system modular and easier to extend.
+3. Developing this project helped me better understand how banking systems function and the complexities involved in managing multiple accounts, currencies, and transactions.
+
 
