@@ -16,6 +16,12 @@ public class SavingsAccount extends ClassicAccount{
         this.interest = interest;
     }
 
+    @Override
+    public void addInterest() {
+        double intitialBalance = balance;
+        balance = intitialBalance + intitialBalance * interest;
+    }
+
     public double getInterest() {
         return interest;
     }

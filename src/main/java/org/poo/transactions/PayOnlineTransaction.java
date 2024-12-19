@@ -6,10 +6,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.poo.accounts.ClassicAccount;
+import org.poo.cards.Card;
 import org.poo.exchangeRates.Bnr;
 import org.poo.exchangeRates.ExchangeRate;
 import org.poo.fileio.CommandInput;
 import org.poo.users.User;
+
+import java.util.HashMap;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PayOnlineTransaction implements TransactionStrategy{
@@ -22,6 +25,8 @@ public class PayOnlineTransaction implements TransactionStrategy{
     private CommandInput command;
     @JsonIgnore
     private User currentUser;
+    @JsonIgnore
+    private Card card;
     @JsonIgnore
     private ArrayNode output;
     @JsonIgnore
@@ -60,7 +65,13 @@ public class PayOnlineTransaction implements TransactionStrategy{
 
                     this.amount = amount;
                     commerciant = command.getCommerciant();
+                    if (account.getType().equals("classic")) {
+                        account.getCommerciants().getPayments().add(this);
+                    } else {
+                        System.out.println("Not on savings");
+                    }
                     description = "Card payment";
+                    card.useCard();
                 }
                 currentUser.getTransactions().add(this);
             }
@@ -72,12 +83,11 @@ public class PayOnlineTransaction implements TransactionStrategy{
                 if (account.getCards().get(i).getCardNumber().equals(cardNumber)) {
                     if (account.getCards().get(i).getStatus().equals("frozen")) {
                         description = "The card is frozen";
-                    } else {
-                        account.getCards().get(i).useCard();
                     }
                     if (account.getType().equals("classic")) {
                         account.getTransactions().add(this);
                     }
+                    card = account.getCards().get(i);
                     return account;
                 }
             }

@@ -19,22 +19,34 @@ public class SendMoneyTransaction implements TransactionStrategy{
     @JsonIgnore
     private ClassicAccount giver;
     @JsonIgnore
-    private User user;
+    private User giverUser;
     @JsonIgnore
     private ClassicAccount receiver;
+    @JsonIgnore
+    private User receiverUser;
     @JsonIgnore
     private Bnr bank;
     @JsonIgnore
     private CommandInput command;
 
-    public SendMoneyTransaction(CommandInput command, ClassicAccount giver, User user, ClassicAccount receiver, Bnr bank) {
+    public SendMoneyTransaction(CommandInput command, ClassicAccount giver, User giverUser, ClassicAccount receiver, User receiverUser, Bnr bank) {
         this.command = command;
         this.giver = giver;
-        this.user = user;
+        this.giverUser = giverUser;
         this.receiver = receiver;
+        this.receiverUser = receiverUser;
         this.bank = bank;
         this.timestamp = command.getTimestamp();
         this.description = command.getDescription();
+    }
+
+    public SendMoneyTransaction(String description, int timestamp, String senderIBAN, String receiverIBAN, String amount, String transferType) {
+        this.description = description;
+        this.timestamp = timestamp;
+        this.senderIBAN = senderIBAN;
+        this.receiverIBAN = receiverIBAN;
+        this.amount = amount;
+        this.transferType = transferType;
     }
 
     public void makeTransaction() {
@@ -59,8 +71,9 @@ public class SendMoneyTransaction implements TransactionStrategy{
             }
             giver.setBalance(giver.getBalance() - command.getAmount());
             receiver.setBalance(receiver.getBalance() + amount);
+            receiverUser.getTransactions().add(new SendMoneyTransaction(description, timestamp, senderIBAN, receiverIBAN, amount + " " + receiver.getCurrency(), "received"));
         }
-        user.getTransactions().add(this);
+        giverUser.getTransactions().add(this);
         if (giver.getType().equals("classic")) {
             giver.getTransactions().add(this);
         }

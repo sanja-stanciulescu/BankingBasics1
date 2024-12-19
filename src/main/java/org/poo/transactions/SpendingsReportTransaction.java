@@ -21,12 +21,22 @@ public class SpendingsReportTransaction implements TransactionStrategy {
 
     public void makeTransaction() {
         if (account == null) {
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode node = mapper.createObjectNode();
+            node.put("command", command.getCommand());
+            node.put("timestamp", timestamp);
+
+            ObjectNode errorNode = mapper.createObjectNode();
+            errorNode.put("description", "Account not found");
+            errorNode.put("timestamp", timestamp);
+
+            node.set("output", errorNode);
+            output.add(node);
+
             return;
         }
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode node = mapper.createObjectNode();
-        node.put("timestamp", timestamp);
-        node.put("command", command.getCommand());
+        ObjectNode node = ReportTransaction.gatherData(command, account);
+        output.add(node);
     }
 
     @Override

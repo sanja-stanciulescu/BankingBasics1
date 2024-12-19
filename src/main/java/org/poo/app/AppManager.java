@@ -3,9 +3,7 @@ package org.poo.app;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.poo.accounts.ClassicAccount;
 import org.poo.cards.Card;
-import org.poo.commerciants.CommerciantCatgeory;
 import org.poo.exchangeRates.Bnr;
-import org.poo.exchangeRates.ExchangeRate;
 import org.poo.fileio.CommandInput;
 import org.poo.fileio.ObjectInput;
 import org.poo.transactions.*;
@@ -87,7 +85,7 @@ public class AppManager {
                 currentAccount = finder.getAccount();
                 currentUser = finder.getUser();
                 searchByIban(registry.getIBAN(command.getReceiver()));
-                transaction = new SendMoneyTransaction(command, currentAccount, currentUser, finder.getAccount(), bank);
+                transaction = new SendMoneyTransaction(command, currentAccount, currentUser, finder.getAccount(), finder.getUser(), bank);
                 break;
             case "setAlias":
                 searchByIban(command.getAccount());
@@ -103,7 +101,11 @@ public class AppManager {
                 break;
             case "changeInterestRate":
                 searchByIban(command.getAccount());
-                transaction = new ChangeInterestTransaction(command, finder.getUser(), finder.getAccount());
+                transaction = new ChangeInterestTransaction(command, output, finder.getUser(), finder.getAccount());
+                break;
+            case "addInterest":
+                searchByIban(command.getAccount());
+                transaction = new AddInterestTransaction(command, output, finder.getAccount());
                 break;
             case "splitPayment":
                 ArrayList<Finder> finders = new ArrayList<>();
@@ -119,6 +121,10 @@ public class AppManager {
             case "report":
                 searchByIban(command.getAccount());
                 transaction = new ReportTransaction(command, output, finder.getAccount());
+                break;
+            case "spendingsReport":
+                searchByIban(command.getAccount());
+                transaction = new SpendingsReportTransaction(command, output, finder.getAccount());
                 break;
             default:
                 System.out.println("Invalid command");

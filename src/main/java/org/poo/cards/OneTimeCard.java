@@ -12,6 +12,7 @@ public class OneTimeCard extends Card{
     @Override
     public void useCard() {
         cardNumber = Utils.generateCardNumber();
+        System.out.println(cardNumber);
         status = "active";
     }
 }

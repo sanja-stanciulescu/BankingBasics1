@@ -1,37 +1,26 @@
 package org.poo.transactions;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.poo.accounts.ClassicAccount;
 import org.poo.fileio.CommandInput;
-import org.poo.users.User;
 
-public class ChangeInterestTransaction implements TransactionStrategy {
-    private String description;
+public class AddInterestTransaction implements TransactionStrategy {
+    private CommandInput command;
+    private ClassicAccount account;
+    private ArrayNode output;
     private int timestamp;
 
-    @JsonIgnore
-    private CommandInput command;
-    @JsonIgnore
-    private User user;
-    @JsonIgnore
-    private ClassicAccount account;
-    @JsonIgnore
-    private ArrayNode output;
-
-    public ChangeInterestTransaction(final CommandInput command, final ArrayNode output, final User user, final ClassicAccount account) {
+    public AddInterestTransaction(CommandInput command, ArrayNode output, ClassicAccount account) {
         this.command = command;
         this.output = output;
-        this.user = user;
         this.account = account;
         this.timestamp = command.getTimestamp();
-        description = "Interest rate of the account changed to " + command.getInterestRate();
     }
 
     public void makeTransaction() {
-        if (user == null || account == null) {
+        if (account == null) {
             System.out.println("Could not change interest rate");
         }
         if (account.getType().equals("classic")) {
@@ -49,20 +38,10 @@ public class ChangeInterestTransaction implements TransactionStrategy {
 
             return;
         }
-        account.changeInterest(command.getInterestRate());
-        account.getTransactions().add(this);
-        user.getTransactions().add(this);
+        account.addInterest();
     }
 
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
+    @Override
     public int getTimestamp() {
         return timestamp;
     }

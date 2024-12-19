@@ -3,7 +3,7 @@ package org.poo.accounts;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.poo.cards.Card;
-import org.poo.commerciants.CommerciantCatgeory;
+import org.poo.commerciants.Commerciant;
 import org.poo.transactions.TransactionStrategy;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class ClassicAccount {
     @JsonIgnore
     private ArrayList<TransactionStrategy> transactions;
     @JsonIgnore
-    private ArrayList<CommerciantCatgeory> commerciants;
+    private Commerciant commerciants;
 
     @JsonProperty("IBAN")
     protected String iban;
@@ -32,9 +32,12 @@ public class ClassicAccount {
         balance = 0;
         cards = new ArrayList<>();
         transactions = new ArrayList<>();
+        commerciants = new Commerciant();
     }
 
     public void changeInterest(double interest) {}
+
+    public void addInterest() {}
 
     public String getIban() {
         return iban;
@@ -90,5 +93,14 @@ public class ClassicAccount {
 
     public void setTransactions(ArrayList<TransactionStrategy> transactions) {
         this.transactions = transactions;
+    }
+
+
+    public Commerciant getCommerciants() {
+        return commerciants;
+    }
+
+    public void setCommerciants(Commerciant commerciants) {
+        this.commerciants = commerciants;
     }
 }
