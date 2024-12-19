@@ -14,7 +14,11 @@ public class DeleteAccountTransaction implements TransactionStrategy{
 
     @JsonIgnore
     private CommandInput command;
+    @JsonIgnore
     private User currentUser;
+    @JsonIgnore
+    private ClassicAccount account;
+    @JsonIgnore
     private ArrayNode output;
 
     public DeleteAccountTransaction(final CommandInput command, final ArrayNode output, final User currentUser) {
@@ -44,6 +48,9 @@ public class DeleteAccountTransaction implements TransactionStrategy{
             } else {
                 outputNode.put("error", "Account couldn't be deleted - see org.poo.transactions for details");
                 outputNode.put("timestamp", timestamp);
+                description = "Account couldn't be deleted - there are funds remaining";
+                account.getTransactions().add(this);
+                currentUser.getTransactions().add(this);
             }
         }
         cardNode.set("output", outputNode);
@@ -57,6 +64,7 @@ public class DeleteAccountTransaction implements TransactionStrategy{
 
         for (int i = 0; i < user.getAccounts().size(); i++) {
             if (user.getAccounts().get(i).getIban().equals(iban)) {
+                account = user.getAccounts().get(i);
                 return i;
             }
         }
@@ -101,5 +109,13 @@ public class DeleteAccountTransaction implements TransactionStrategy{
 
     public void setOutput(ArrayNode output) {
         this.output = output;
+    }
+
+    public ClassicAccount getAccount() {
+        return account;
+    }
+
+    public void setAccount(ClassicAccount account) {
+        this.account = account;
     }
 }

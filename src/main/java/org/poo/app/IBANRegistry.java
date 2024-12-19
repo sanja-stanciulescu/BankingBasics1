@@ -1,10 +1,16 @@
 package org.poo.app;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class IBANRegistry {
-    private final Map<String, String> ibanAliases = new HashMap<String, String>();
+    private Map<String, List<String>> ibanAliases;
+
+    public IBANRegistry() {
+        ibanAliases = new HashMap<String, List<String>>();
+    }
 
     public void registerIBAN(String iban, String alias) {
         if (iban == null || iban.trim().isEmpty() || alias == null || alias.trim().isEmpty()) {
@@ -12,14 +18,14 @@ public class IBANRegistry {
             return;
         }
 
-        ibanAliases.put(alias, iban);
+        ibanAliases.computeIfAbsent(alias, k -> new ArrayList<String>()).add(iban);
     }
 
     public boolean updateAlias(String currentIdentifier, String newAlias) {
         if (currentIdentifier == null || newAlias == null) {
             return false;
         }
-
+        System.out.println("Updating IBAN: " + currentIdentifier + " to " + newAlias);
         String existingIban = getIBAN(currentIdentifier);
 
         if (existingIban == null) {
@@ -35,12 +41,16 @@ public class IBANRegistry {
     }
 
     public String getIBAN(String identifier) {
-        if (ibanAliases.containsValue(identifier)) {
-            return identifier;
+        if (ibanAliases.containsKey(identifier)) {
+            System.out.println("Alias is " + identifier);
+            return ibanAliases.get(identifier).getLast();
         }
 
-        if (ibanAliases.containsKey(identifier)) {
-            return ibanAliases.get(identifier);
+        for (Map.Entry<String, List<String>> entry : ibanAliases.entrySet()) {
+            if (entry.getValue().contains(identifier)) {
+                System.out.println("Iban is " + identifier);
+                return identifier;
+            }
         }
 
         return null;
@@ -51,7 +61,16 @@ public class IBANRegistry {
             return false;
         }
 
-        return ibanAliases.remove(identifier) != null;
+        for (Map.Entry<String, List<String>> entry : ibanAliases.entrySet()) {
+            if (entry.getValue().remove(identifier)) {
+                if (entry.getValue().isEmpty()) {
+                    ibanAliases.remove(entry.getKey());
+                }
+                return true;
+            }
+        }
+
+        return false;
     }
 
 

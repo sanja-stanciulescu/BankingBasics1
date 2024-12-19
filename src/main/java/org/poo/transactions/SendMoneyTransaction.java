@@ -71,12 +71,19 @@ public class SendMoneyTransaction implements TransactionStrategy{
             }
             giver.setBalance(giver.getBalance() - command.getAmount());
             receiver.setBalance(receiver.getBalance() + amount);
-            receiverUser.getTransactions().add(new SendMoneyTransaction(description, timestamp, senderIBAN, receiverIBAN, amount + " " + receiver.getCurrency(), "received"));
+            TransactionStrategy trans = new SendMoneyTransaction(description, timestamp, senderIBAN, receiverIBAN, amount + " " + receiver.getCurrency(), "received");
+            receiverUser.getTransactions().add(trans);
+            receiver.getTransactions().add(trans);
         }
-        giverUser.getTransactions().add(this);
+        if (giverUser.getEmail().equals(receiverUser.getEmail())) {
+            giverUser.getTransactions().add(giverUser.getTransactions().size() - 1, this);
+        } else {
+            giverUser.getTransactions().add(this);
+        }
         if (giver.getType().equals("classic")) {
             giver.getTransactions().add(this);
         }
+        System.out.println("Could make transaction");
     }
 
     public String getDescription() {

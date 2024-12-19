@@ -58,6 +58,7 @@ public class PayOnlineTransaction implements TransactionStrategy{
                 } else {
                     amount = command.getAmount();
                 }
+                int cardChanged = 0;
                 if (account.getBalance() - amount <= account.getMinBalance()) {
                     description = "Insufficient funds";
                 } else {
@@ -71,9 +72,13 @@ public class PayOnlineTransaction implements TransactionStrategy{
                         System.out.println("Not on savings");
                     }
                     description = "Card payment";
-                    card.useCard();
+                    cardChanged = card.useCard(account.getIban(), currentUser, currentUser.getEmail(), timestamp);
                 }
-                currentUser.getTransactions().add(this);
+                if (cardChanged == 1) {
+                    currentUser.getTransactions().add(currentUser.getTransactions().size() - 2, this);
+                } else {
+                    currentUser.getTransactions().add(this);
+                }
             }
     }
 

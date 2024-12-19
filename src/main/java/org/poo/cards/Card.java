@@ -1,6 +1,7 @@
 package org.poo.cards;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.poo.users.User;
 
 public class Card {
     protected String cardNumber;
@@ -15,7 +16,9 @@ public class Card {
         checkedStatus = 0;
     }
 
-    public void useCard() {}
+    public int useCard(String account, User user, String cardHolder, int timestamp) {
+        return 0;
+    }
 
     public String getCardNumber() {
         return cardNumber;

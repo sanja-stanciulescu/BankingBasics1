@@ -25,6 +25,14 @@ public class AddCardTransaction implements TransactionStrategy{
         timestamp = command.getTimestamp();
     }
 
+    public AddCardTransaction(String account, String card, String cardHolder, String description, int timestamp) {
+        this.account = account;
+        this.card = card;
+        this.cardHolder = cardHolder;
+        this.description = description;
+        this.timestamp = timestamp;
+    }
+
     @Override
     public void makeTransaction() {
         int ret = searchIban(currentUser, command.getAccount());
@@ -47,7 +55,6 @@ public class AddCardTransaction implements TransactionStrategy{
         for (ClassicAccount account : user.getAccounts()) {
             if (account.getIban().equals(iban)) {
                 String cardNumber = Utils.generateCardNumber();
-                System.out.println("Card number: " + cardNumber);
                 card = cardNumber;
                 if (command.getCommand().equals("createCard")) {
                     account.getCards().add(new Card(cardNumber, "active"));

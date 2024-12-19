@@ -27,6 +27,14 @@ public class DeleteCardTransaction implements TransactionStrategy {
         this.timestamp = command.getTimestamp();
     }
 
+    public DeleteCardTransaction(final String description, final int timestamp, final String account, final String card, final String cardHolder) {
+        this.description = description;
+        this.timestamp = timestamp;
+        this.account = account;
+        this.card = card;
+        this.cardHolder = cardHolder;
+    }
+
     public void makeTransaction() {
         if (currentAccount != null) {
             int idx = pickCard(command.getCardNumber());

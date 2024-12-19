@@ -35,6 +35,20 @@ public class SpendingsReportTransaction implements TransactionStrategy {
 
             return;
         }
+        if (account.getType().equals("savings")) {
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode node = mapper.createObjectNode();
+            node.put("command", command.getCommand());
+            node.put("timestamp", timestamp);
+
+            ObjectNode errorNode = mapper.createObjectNode();
+            errorNode.put("error", "This kind of report is not supported for a saving account");
+
+            node.set("output", errorNode);
+            output.add(node);
+
+            return;
+        }
         ObjectNode node = ReportTransaction.gatherData(command, account);
         output.add(node);
     }
