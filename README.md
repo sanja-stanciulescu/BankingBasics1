@@ -1,11 +1,6 @@
-# Project Assignment POO  - J. POO Morgan - Phase One
+# Project Assignment POO  - Banking Basics - Phase One
 
 <div align="center"><img src="https://media1.tenor.com/m/l2KqipO86aAAAAAd/banking-that.gif" width="500px" alt=""></div>
-
-## Notice
-In the git_log.txt file, there will be commits done under the user: tomaariciu <tomaariciu@gmail.com>. 
-Due to some problems with my laptop, I worked from one of my classmate's laptop and did not change his
---global user.name.
 
 ## Personal Overview
 This project is a complex banking system built to simulate various banking operations.
